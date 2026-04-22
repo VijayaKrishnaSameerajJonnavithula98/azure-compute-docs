@@ -124,6 +124,37 @@ Now that you have setup an Azure Key Vault and disk encryption set, you can depl
 
 You've now deployed a VM with encryption at host enabled using customer-managed keys.
 
+## Recommended approach for AVD host pools
+
+For Azure Virtual Desktop (AVD) environments, the recommended approach is to **redeploy session hosts** rather than attempting disk-level migration.
+
+For both pooled and personal host pools, the supported approach is to replace Azure Disk Encryption (ADE)-enabled session hosts with new virtual machines that have Encryption at Host enabled.
+
+### Steps
+
+1. **Create a new golden image**
+   - Ensure Azure Disk Encryption is not enabled
+   - Validate applications and configurations
+
+2. **Deploy new session hosts**
+   - Use Azure Compute Gallery or a custom image
+   - Enable `encryptionAtHost = true` at VM creation time
+
+3. **Add new session hosts to the host pool**
+   - Ensure session hosts are healthy and accepting connections
+
+4. **Validate workloads**
+   - Confirm user profile access (for example, FSLogix)
+   - Validate applications and policies
+
+5. **Drain existing ADE-enabled session hosts**
+   - Enable drain mode
+   - Allow existing user sessions to log off gracefully
+
+6. **Remove and decommission old session hosts**
+   - Remove session hosts from the host pool
+   - Delete associated virtual machines and disks
+
 ## Disable host based encryption
 
 Deallocate your VM first, encryption at host can't be disabled unless your VM is deallocated.
